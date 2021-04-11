@@ -1,11 +1,12 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
-const ErrorResponse = require('./utils/errorResponse')
+const AppError = require('./utils/appError')
 const errorHandler = require('./middleware/errors')
 
 //Routes
 const productRoutes = require('./routes/products')
+const userRoutes = require('./routes/users')
 
 dotenv.config()
 
@@ -13,11 +14,14 @@ connectDB()
 
 const app = express()
 
+app.use(express.json())
+
 // Mount Routes
 app.use('/api/products', productRoutes)
+app.use('/api/users', userRoutes)
 
 app.all('*', (req, res, next) => {
-  next(new ErrorResponse(`Can't find ${req.originalUrl}`, 404))
+  next(new AppError(`Can't find ${req.originalUrl}`, 404))
 })
 
 app.use(errorHandler)
