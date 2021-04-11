@@ -1,7 +1,11 @@
 const express = require('express')
 const dotenv = require('dotenv')
-const products = require('./data/products')
 const connectDB = require('./config/db')
+const ErrorResponse = require('./utils/errorResponse')
+const errorHandler = require('./middleware/errors')
+
+//Routes
+const productRoutes = require('./routes/products')
 
 dotenv.config()
 
@@ -9,18 +13,14 @@ connectDB()
 
 const app = express()
 
-app.get('/', (req, res) => {
-  res.send('API is running ...')
+// Mount Routes
+app.use('/api/products', productRoutes)
+
+app.all('*', (req, res, next) => {
+  next(new ErrorResponse(`Can't find ${req.originalUrl}`, 404))
 })
 
-app.get('/api/products', (req, res) => {
-  res.json(products)
-})
-
-app.get('/api/products/:id', (req, res) => {
-  const product = products.find(p => p._id === req.params.id)
-  res.json(product)
-})
+app.use(errorHandler)
 
 const port = process.env.PORT || 5000
 
