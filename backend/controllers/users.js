@@ -29,7 +29,10 @@ const createSendToken = (user, statusCode, res) => {
 
   res.status(statusCode).json({
     token,
-    user
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.isAdmin
   })  
 }
 
@@ -57,7 +60,9 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   // Check if exists user with that email
   const user = await User.findOne({email}).select('+password')
-  if (!user) return next(new AppError('Incorrect email or passowrd', 401))
+  if (!user) {
+    return next(new AppError('Incorrect email or passowrd', 401))
+  }
 
   // Check if password match
   const isCorrectPassword = await user.correctPassword(password, user.password)

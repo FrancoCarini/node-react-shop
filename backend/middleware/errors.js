@@ -2,7 +2,7 @@ const AppError = require('../utils/appError')
 
 const errorHandler = (err, req, res, next) => {
   let error = {}
-  error.statusCode = err.code
+  error.statusCode = err.statusCode
   error.message = err.message
 
   //Mongoose Bad Object ID
@@ -26,6 +26,8 @@ const errorHandler = (err, req, res, next) => {
   if (error.name === 'JsonWebTokenError') error = new AppError('Invalid Token. Please login again.', 401)
 
   if (error.name === 'TokenExpiredError') error = new AppError('Token Expired. Please login again.', 401)
+
+  console.log(`Status Code es: ${error.statusCode}`)
 
   res.status(error.statusCode || 500).json({
     success: false,
