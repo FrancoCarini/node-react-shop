@@ -36,8 +36,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    // roles is an Array EX: ['admin', 'salesman', 'manager']
-    if (!roles.includes(req.user.role)) {
+    if (!req.user.isAdmin) {
       return next(new AppError('You dont have permission to perform this action', 403))
     }
     next()

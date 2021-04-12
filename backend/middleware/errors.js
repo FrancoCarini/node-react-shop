@@ -27,8 +27,6 @@ const errorHandler = (err, req, res, next) => {
 
   if (error.name === 'TokenExpiredError') error = new AppError('Token Expired. Please login again.', 401)
 
-  console.log(`Status Code es: ${error.statusCode}`)
-
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || 'Server Error'
