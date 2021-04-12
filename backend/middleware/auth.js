@@ -28,11 +28,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new AppError('User does not exists'), 401)
   }
 
-  // Check if user changes password after the token was issued
-  if (user.changePasswordAfter(decoded.iat)) {
-    return next(new AppError('User recently changed password. Please login again.', 401))
-  }
-
   // Grant access to protected route
   res.locals.user = user
   req.user = user
