@@ -1,6 +1,6 @@
 const Product = require('../models/Product')
 const asyncHandler = require('express-async-handler')
-const ErrorResponse = require('../utils/errorResponse')
+const AppError = require('../utils/appError')
 
 // @desc Fetch all products
 // @route GET /api/products
@@ -16,7 +16,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
 exports.getProduct = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(req.params.id)
   if (!product) {
-    return next(new ErrorResponse(`Product Not Found with id of ${req.params.id}`, 404))
+    return next(new AppError(`Product Not Found with id of ${req.params.id}`, 404))
   }
 
   res.status(200).json(product)

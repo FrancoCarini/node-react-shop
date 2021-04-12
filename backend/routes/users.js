@@ -21,6 +21,4 @@ router
     .get(protect, restrictTo('admin'), userController.getUserById)
     .put(protect, restrictTo('admin'), userController.updateUser)
 
-export default router
-
 module.exports = router
