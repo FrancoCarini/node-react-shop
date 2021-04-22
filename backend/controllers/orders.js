@@ -1,7 +1,6 @@
 const Order = require('../models/Order')
 const asyncHandler = require('express-async-handler')
 const AppError = require('../utils/appError')
-const { findById } = require('../models/Order')
 
 exports.createOrder = asyncHandler(async (req, res, next) => {
   const {
@@ -53,12 +52,11 @@ exports.updateOrderToPaid = asyncHandler(async (req, res, next) => {
 
   order.isPaid = true
   order.paidAt = Date.now()
-  order.paymentResult = {
-    id: req.body.id,
-    status: req.body.status,
-    update_time: req.body.update_time,
-    email_address: req.body.payer.email_address
-  }
   const updatedOrder = await order.save()
   res.json(updatedOrder)
+})
+
+exports.getMyOrders = asyncHandler(async (req, res, next) => {
+  const orders = await Order.find({ user: req.user._id })
+  res.json(orders)
 })

@@ -4,7 +4,8 @@ import { Col, Row, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getOrderDetails } from '../actions/orderActions'
+import { getOrderDetails, payOrder } from '../actions/orderActions'
+import { ORDER_PAY_RESET } from '../constants/orderConstants'
 
 const OrderScreen = ({ match }) => {
   const orderId = match.params.id
@@ -13,6 +14,9 @@ const OrderScreen = ({ match }) => {
 
   const orderDetails = useSelector(state => state.orderDetails)
   const { order, loading, error } = orderDetails
+
+  const orderPay = useSelector(state => state.orderPay)
+  const { loading: loadingPay, success: successPay } = orderPay
 
   if (!loading) {
     const addDecimals = num => {
@@ -26,10 +30,15 @@ const OrderScreen = ({ match }) => {
   }
 
   useEffect(() => {
-    if (!order || order._id !== orderId) {
+    if (!order || successPay) {
+      dispatch({ type: ORDER_PAY_RESET })
       dispatch(getOrderDetails(orderId))
     }
-  }, [order, orderId])
+  }, [dispatch, order, orderId, successPay])
+
+  const successPaymentHandler = () => {
+    dispatch(payOrder(orderId))
+  }
 
   return loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : 
   <>
@@ -122,6 +131,16 @@ const OrderScreen = ({ match }) => {
                   <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
+              {!order.isPaid && (
+                <ListGroup.Item>
+                  {loadingPay && <Loader />}
+                  <Button 
+                    type='button' 
+                    className='btn-block btn-success' 
+                    onClick={successPaymentHandler}
+                  >Pay Order</Button>
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>
