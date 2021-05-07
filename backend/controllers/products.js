@@ -21,3 +21,15 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 
   res.status(200).json(product)
 })
+
+exports.deleteProduct = asyncHandler(async (req, res, next) => {
+  const product = await Product.findById(req.params.id)
+  if (!product) {
+    return next(new AppError(`Product Not Found with id of ${req.params.id}`, 404))
+  }
+
+  await product.remove()
+
+  res.status(200).json({ message: 'Product removed' })
+})
+
